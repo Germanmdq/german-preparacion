@@ -1,20 +1,20 @@
 'use client';
 
 import { getApp, getApps, initializeApp } from 'firebase/app';
-import { getAuth, setPersistence, browserLocalPersistence, GoogleAuthProvider } from 'firebase/auth';
+import { getAuth, setPersistence, browserLocalPersistence, GoogleAuthProvider, type Auth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyCyhXfIHDClrc66cCWYCI8To6ukWdPQl5Tm4',
-  authDomain: 'german-preparacion.firebaseapp.com',
-  projectId: 'german-preparacion',
-  storageBucket: 'german-preparacion.firebasestorage.app',
-  messagingSenderId: '749087138125',
-  appId: '1:749087138125:web:0be4b2ba0c67b5b07f9704',
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-export const db = getFirestore(app);
+const app = typeof window === 'undefined' ? null : (getApps().length ? getApp() : initializeApp(firebaseConfig));
+export const auth = app ? getAuth(app) : (null as unknown as Auth);
+export const db = app ? getFirestore(app) : (null as unknown as ReturnType<typeof getFirestore>);
 export const googleProvider = new GoogleAuthProvider();
-export const authPersistence = setPersistence(auth, browserLocalPersistence);
+export const authPersistence = app ? setPersistence(auth, browserLocalPersistence) : Promise.resolve();

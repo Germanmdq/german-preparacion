@@ -128,6 +128,8 @@ button:focus-visible {
 .audio-intro-card { width:100%; min-height:62svh; display:flex; flex-direction:column; align-items:center; justify-content:center; }
 .audio-intro-panel { width:min(100%, 410px); padding:24px 18px 20px; border-radius:38px; background:#fff; box-shadow:0 14px 36px #00000012, 0 2px 8px #0000000c; display:flex; flex-direction:column; align-items:center; }
 .voice-aura-wrap { display:flex; flex-direction:column; align-items:center; justify-content:center; margin:0; }
+.audio-static-wave { width:min(84vw,360px); height:112px; display:flex; align-items:center; justify-content:center; gap:4px; }
+.audio-static-wave span { width:4px; flex:0 0 4px; border-radius:999px; background:linear-gradient(180deg,#ef6268 0%,#d92d35 55%,#b91f28 100%); box-shadow:0 2px 8px #d92d3520; }
 .audio-guidance { margin-top: 12px; text-align:center; }
 .audio-guidance p { margin:0; color:#4e5058; font-size:14px; line-height:1.35; }
 .audio-guidance span { display:flex; align-items:center; justify-content:center; gap:5px; margin-top:6px; color:#9a9ba2; font-size:11px; line-height:1.3; }
