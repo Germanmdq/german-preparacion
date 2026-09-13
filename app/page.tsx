@@ -1,7 +1,8 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import { onAuthStateChanged, getRedirectResult, User } from 'firebase/auth';
+import { onAuthStateChanged, getRedirectResult, signOut, User } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
+import { assessmentStorage } from '@/lib/storage/assessment-storage';
 import { IntroVideo } from '@/components/IntroVideo';
 import { PreparationIntro } from '@/components/PreparationIntro';
 import { AuthScreen } from '@/components/AuthScreen';
@@ -27,6 +28,7 @@ export default function Page() {
     setStage('intro');
   };
   const afterPresentation = () => setStage(user ? 'assessment' : 'auth');
+  const logout = async () => { await signOut(auth); assessmentStorage.clear(); setStage('auth'); };
   if (!authReady) return <div className="app-shell" />;
-  return <div className="app-shell"><audio ref={presentationRef} className="presentation-audio" preload="auto" playsInline />{stage==='video'&&<IntroVideo onFinish={enter}/>} {stage==='intro'&&<PreparationIntro audio={presentationRef.current} onStart={afterPresentation}/>} {stage==='auth'&&<AuthScreen onAuthenticated={()=>setStage('assessment')}/>} {stage==='assessment'&&<Assessment/>}</div>;
+  return <div className="app-shell"><audio ref={presentationRef} className="presentation-audio" preload="auto" playsInline />{stage==='video'&&<IntroVideo onFinish={enter}/>} {stage==='intro'&&<PreparationIntro audio={presentationRef.current} onStart={afterPresentation}/>} {stage==='auth'&&<AuthScreen onAuthenticated={()=>setStage('assessment')}/>} {stage==='assessment'&&user&&<Assessment user={user} onLogout={logout}/>}</div>;
 }
