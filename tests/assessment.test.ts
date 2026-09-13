@@ -1,0 +1,4 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {questions,patternKeys} from '../data/questions';import {scoreAssessment} from '../lib/assessment/scoring';
+test('has 24 configurable audio questions',()=>{assert.equal(questions.length,24);assert.ok(questions.every(q=>q.options.length===3&&q.options.every(o=>typeof o.audioSrc==='string')))});
+for(const pattern of patternKeys)test(`can produce ${pattern}`,()=>{const answers=Object.fromEntries(questions.map(q=>[q.id,q.options.find(o=>o.scores[pattern]===3)?.id??q.options[2].id]));assert.equal(scoreAssessment(questions,answers).primaryPattern,pattern)});
+test('stable tie breaker and unanswered questions',()=>{const empty=scoreAssessment(questions,{});assert.equal(empty.primaryPattern,'problem_solution');assert.equal(empty.secondaryPattern,'circumstances');assert.deepEqual(Object.values(empty.scores),[0,0,0,0,0,0])});
