@@ -18,8 +18,15 @@ export default function Page() {
     void getRedirectResult(auth).catch(() => undefined);
     return unsubscribe;
   }, []);
-  const enter = () => { const audio = new Audio('/audio/presentation.mp3'); audio.preload='auto'; presentationRef.current=audio; void audio.play().catch(()=>{}); setStage('intro'); };
+  const enter = () => {
+    const audio = presentationRef.current;
+    if (!audio) return;
+    audio.src = '/audio/presentation.mp3';
+    audio.load();
+    void audio.play().catch(() => undefined);
+    setStage('intro');
+  };
   const afterPresentation = () => setStage(user ? 'assessment' : 'auth');
   if (!authReady) return <div className="app-shell" />;
-  return <div className="app-shell">{stage==='video'&&<IntroVideo onFinish={enter}/>} {stage==='intro'&&<PreparationIntro audio={presentationRef.current} onStart={afterPresentation}/>} {stage==='auth'&&<AuthScreen onAuthenticated={()=>setStage('assessment')}/>} {stage==='assessment'&&<Assessment/>}</div>;
+  return <div className="app-shell"><audio ref={presentationRef} className="presentation-audio" preload="auto" playsInline />{stage==='video'&&<IntroVideo onFinish={enter}/>} {stage==='intro'&&<PreparationIntro audio={presentationRef.current} onStart={afterPresentation}/>} {stage==='auth'&&<AuthScreen onAuthenticated={()=>setStage('assessment')}/>} {stage==='assessment'&&<Assessment/>}</div>;
 }
