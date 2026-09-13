@@ -1,3 +1,29 @@
 'use client';
-import { ArrowRight } from 'lucide-react'; import { useEffect,useRef,useState } from 'react';
-export function IntroVideo({onFinish}:{onFinish:()=>void}){const ref=useRef<HTMLDivElement>(null);const [enter,setEnter]=useState(false);useEffect(()=>{const root=ref.current;if(!root)return;const video=document.createElement('video');video.className='video-intro-video';video.src='/videos/video-german-white.mp4?v=3';for(const a of ['autoplay','playsinline','webkit-playsinline'])video.setAttribute(a,'');video.preload='auto';video.muted=true;video.defaultMuted=true;video.playsInline=true;video.autoplay=true;video.setAttribute('aria-label','Presentación de Germán Asistente');video.onended=()=>setEnter(true);root.appendChild(video);video.play().catch(()=>{});return()=>{video.pause();video.remove();}},[]);return <div className="video-intro" ref={ref}>{enter&&<button className="video-intro-enter" onClick={onFinish}>Entrar <ArrowRight size={19}/></button>}</div>}
+import { ArrowRight } from 'lucide-react';
+import { useEffect,useRef,useState } from 'react';
+
+export function IntroVideo({onFinish}:{onFinish:()=>void}){
+  const videoRef=useRef<HTMLVideoElement>(null);
+  const [started,setStarted]=useState(false);
+  const [ended,setEnded]=useState(false);
+
+  useEffect(()=>{
+    const video=videoRef.current;
+    if(!video)return;
+    video.load();
+  },[]);
+
+  const start=()=>{
+    const video=videoRef.current;
+    if(!video)return;
+    video.muted=false;
+    video.volume=1;
+    void video.play().then(()=>setStarted(true)).catch(()=>{});
+  };
+
+  return <div className="video-intro">
+    <video ref={videoRef} className="video-intro-video" src="/videos/video-german-white.mp4?v=4" preload="auto" playsInline onEnded={()=>setEnded(true)} aria-label="Presentación de Germán Asistente" />
+    {!started&&<button className="video-intro-enter" onClick={start}>Empezar <ArrowRight size={19}/></button>}
+    {ended&&<button className="video-intro-enter" onClick={onFinish}>Ingresar <ArrowRight size={19}/></button>}
+  </div>;
+}

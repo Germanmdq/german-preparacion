@@ -10,7 +10,7 @@ export function PreparationIntro({onStart,audio}:{onStart:()=>void;audio?:HTMLAu
   return <main className="screen intro-screen audio-intro-screen">
     <section className="audio-intro-card">
       <VoiceAura audio={audio} onEnded={onAudioEnded}/>
-      {finished && <button className="btn-primary audio-intro-enter" onClick={onStart}>Empezar <ArrowRight size={20}/></button>}
+      {finished && <button className="btn-primary audio-intro-enter" onClick={onStart}>Ingresar <ArrowRight size={20}/></button>}
     </section>
   </main>;
 }
