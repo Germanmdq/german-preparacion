@@ -29,9 +29,11 @@ export function PreparationIntro({onStart,audio}:{onStart:()=>void;audio?:HTMLAu
   }, [audio]);
   return <main className="screen intro-screen audio-intro-screen">
     <section className="audio-intro-card">
-      <VoiceAura audio={audio} onEnded={onAudioEnded}/>
-      {!finished && <div className="audio-guidance" aria-live="polite"><p>Escuchá este mensaje antes de continuar</p><span><Volume2 size={13} aria-hidden="true"/> Subí el volumen para escucharme mejor</span></div>}
-      <div className="audio-progress" role="progressbar" aria-label="Progreso del mensaje de audio" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress * 100)}><i style={{width:`${progress * 100}%`}} /></div>
+      <div className="audio-intro-panel">
+        <VoiceAura audio={audio} onEnded={onAudioEnded}/>
+        {!finished && <div className="audio-guidance" aria-live="polite"><p>Presentación en audio</p><span><Volume2 size={13} aria-hidden="true"/> Subí el volumen para escucharme mejor</span></div>}
+        <div className="audio-progress" role="progressbar" aria-label="Progreso del mensaje de audio" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress * 100)}><i style={{width:`${progress * 100}%`}} /></div>
+      </div>
       {finished && <button className="btn-primary audio-intro-enter" onClick={onStart}>Ingresar <ArrowRight size={20}/></button>}
     </section>
   </main>;
