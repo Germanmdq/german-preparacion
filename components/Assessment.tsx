@@ -1,5 +1,5 @@
 'use client';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import type { User } from 'firebase/auth';
 import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
@@ -23,5 +23,5 @@ export function Assessment({user,onLogout}:{user:User;onLogout:()=>Promise<void>
  const select=(id:string)=>setSession(current=>current?{...current,answers:{...current.answers,[question.id]:id}}:current);
  const recordPlay=(optionId:string)=>setSession(current=>current?{...current,audioPlayEvents:[...current.audioPlayEvents,{questionId:question.id,optionId,playedAt:new Date().toISOString(),order:current.audioPlayEvents.length+1}]}:current);
  const next=()=>{if(!selected||lock.current)return;lock.current=true;if(index<questions.length-1){setIndex(value=>value+1);requestAnimationFrame(()=>{lock.current=false})}else{const result=buildResult(questions,session.answers);setAnalyzing(true);setTimeout(()=>{const done={...session,completedAt:new Date().toISOString(),scores:result.scores,primaryPattern:result.primaryPattern,secondaryPattern:result.secondaryPattern};assessmentStorage.save(done);setSession(done);setAnalyzing(false);lock.current=false},1200)}};
- return <main className="screen assessment-screen"><section className="assessment-inner"><button className="session-logout" onClick={()=>void onLogout()}>Cerrar sesión</button><Progress current={index+1} total={questions.length}/><div key={question.id} className="question-transition"><QuestionCard question={question} value={selected} onChange={select} onAudioPlay={recordPlay}/></div><div className="assessment-actions"><button className="btn-back" onClick={()=>setIndex(value=>Math.max(0,value-1))} disabled={index===0}><ArrowLeft size={19}/> Volver</button><button className="btn-primary" onClick={next} disabled={!selected}>Continuar <ArrowRight size={19}/></button></div></section></main>
+ return <main className="screen assessment-screen"><section className="assessment-inner"><button className="session-logout" onClick={()=>void onLogout()}>Cerrar sesión</button><Progress current={index+1} total={questions.length}/><div key={question.id} className="question-transition"><QuestionCard question={question} value={selected} onChange={select} onAudioPlay={recordPlay}/></div><div className="assessment-actions"><button className="btn-primary" onClick={next} disabled={!selected}>Continuar <ArrowRight size={19}/></button></div></section></main>
 }

@@ -482,3 +482,11 @@ button:focus-visible {
 .assessment-actions{margin-top:24px;padding-top:0}
 .assessment-actions .btn-primary{min-height:54px}
 @media (max-height:800px){.audio-options{gap:12px}.audio-choice{padding:10px 12px 9px}.audio-choice-player{min-height:56px;grid-template-columns:48px minmax(0,1fr) 40px}.audio-choice-player .audio-play{width:48px;height:48px}.answer-confirm{min-height:34px;margin-top:4px}.question-card legend{padding-bottom:14px}.assessment-actions{margin-top:16px}}
+
+/* Audio progress: thin red playhead instead of pink overlay */
+.audio-choice .audio-fill{display:none}
+.audio-progress-line{position:absolute;top:3px;bottom:3px;width:3px;border-radius:3px;background:#d92d35;transform:translateX(-1.5px);pointer-events:none;transition:left .08s linear}
+.audio-choice:not(.playing) .audio-progress-line{opacity:0}
+.audio-choice.playing .audio-wave{color:#d1d1d6}
+.assessment-actions{display:flex;justify-content:center;margin-top:24px;padding-top:0}
+.assessment-actions .btn-primary{width:min(72%,360px);background:#d92d35}

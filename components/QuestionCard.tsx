@@ -11,7 +11,7 @@ function AudioOption({option,selected,playing,onSelect,onPlay}:{option:QuestionO
  return <div className={`audio-choice${selected?' selected':''}${playing?' playing':''}`}>
    <div className="audio-choice-player">
     <button type="button" className="audio-play" aria-label={playing?'Pausar respuesta':'Reproducir respuesta'} onClick={onPlay} disabled={!option.audioSrc}>{playing?<Pause size={21}/>:<Play size={21} fill="currentColor"/>}</button>
-    <div className="audio-timeline" aria-hidden="true"><div className="audio-wave">{Array.from({length:30},(_,i)=><i key={i} style={{height:`${9+((i*11)%23)}px`}}/>)}</div><span className="audio-fill" style={{transform:`scaleX(${duration?current/duration:0})`}}/></div>
+    <div className="audio-timeline" aria-hidden="true"><div className="audio-wave">{Array.from({length:30},(_,i)=><i key={i} style={{height:`${9+((i*11)%23)}px`}}/>)}</div><span className="audio-progress-line" style={{left:`${(duration?current/duration:0)*100}%`}}/></div>
     <time>{formatTime(duration)}</time>
    </div>
    <button type="button" className="answer-confirm" aria-pressed={selected} onClick={onSelect}>{selected?'Respuesta elegida':'Esta es mi respuesta'}</button>
