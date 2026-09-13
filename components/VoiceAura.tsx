@@ -1,11 +1,11 @@
 'use client';
 import { useEffect, useRef } from 'react';
 
-export function VoiceAura({src='/audio/presentation.mp3',onEnded}:{src?:string;onEnded?:()=>void}){
+export function VoiceAura({src='/audio/presentation.mp3',audio:externalAudio,onEnded}:{src?:string;audio?:HTMLAudioElement|null;onEnded?:()=>void}){
   const audioRef=useRef<HTMLAudioElement>(null);
   const canvasRef=useRef<HTMLCanvasElement>(null);
   useEffect(()=>{
-    const audio=audioRef.current, canvas=canvasRef.current;
+    const audio=externalAudio??audioRef.current, canvas=canvasRef.current;
     if(!audio||!canvas)return;
     let ac:AudioContext|null=null, analyser:AnalyserNode|null=null, source:MediaElementAudioSourceNode|null=null, raf=0;
     let data:Uint8Array<ArrayBuffer>|null=null;
@@ -29,8 +29,8 @@ export function VoiceAura({src='/audio/presentation.mp3',onEnded}:{src?:string;o
       if(ac.state==='suspended')await ac.resume();
     };
     const play=()=>{void setup()}; const ended=()=>onEnded?.();
-    audio.addEventListener('play',play);audio.addEventListener('ended',ended);void audio.play().catch(()=>{});
+    audio.addEventListener('play',play);audio.addEventListener('ended',ended);if(!audio.paused)void setup();else void audio.play().catch(()=>{});
     return()=>{cancelAnimationFrame(raf);audio.removeEventListener('play',play);audio.removeEventListener('ended',ended);source?.disconnect();analyser?.disconnect();void ac?.close()};
-  },[onEnded]);
-  return <div className="voice-aura-wrap" aria-label="Presentación en audio"><canvas ref={canvasRef} className="voice-live-wave" aria-hidden="true"/><audio ref={audioRef} src={src} autoPlay preload="auto" playsInline/></div>;
+  },[externalAudio,onEnded]);
+  return <div className="voice-aura-wrap" aria-label="Presentación en audio"><canvas ref={canvasRef} className="voice-live-wave" aria-hidden="true"/>{!externalAudio&&<audio ref={audioRef} src={src} autoPlay preload="auto" playsInline/>}</div>;
 }
