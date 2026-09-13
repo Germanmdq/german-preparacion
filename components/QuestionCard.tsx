@@ -8,12 +8,14 @@ const formatTime=(seconds:number)=>!Number.isFinite(seconds)||seconds<=0?'--:--'
 function AudioOption({option,selected,playing,onSelect,onPlay}:{option:QuestionOption;selected:boolean;playing:boolean;onSelect:()=>void;onPlay:()=>void}){
  const audio=useRef<HTMLAudioElement>(null);const [current,setCurrent]=useState(0);const [duration,setDuration]=useState(option.duration??0);
  useEffect(()=>{const element=audio.current;if(!element)return;if(playing&&option.audioSrc)element.play().catch(()=>undefined);else element.pause()},[playing,option.audioSrc]);
- return <div className={`audio-option${selected?' selected':''}${playing?' playing':''}`}>
-  <button type="button" className="radio-select" aria-label={selected?'Respuesta seleccionada':'Seleccionar esta respuesta'} aria-pressed={selected} onClick={onSelect}><span/></button>
-  <button type="button" className="audio-play" aria-label={playing?'Pausar respuesta':'Reproducir respuesta'} onClick={onPlay} disabled={!option.audioSrc}>{playing?<Pause size={19}/>:<Play size={19} fill="currentColor"/>}</button>
-  <div className="audio-timeline" aria-hidden="true"><div className="audio-wave">{Array.from({length:22},(_,i)=><i key={i} style={{height:`${8+((i*7)%15)}px`}}/>)}</div><span className="audio-fill" style={{transform:`scaleX(${duration?current/duration:0})`}}/></div>
-  <time>{formatTime(duration)}</time>
-  {option.audioSrc&&<audio ref={audio} src={option.audioSrc} preload="metadata" onLoadedMetadata={e=>setDuration(e.currentTarget.duration)} onTimeUpdate={e=>setCurrent(e.currentTarget.currentTime)} onEnded={onPlay}/>} 
+ return <div className={`audio-choice${selected?' selected':''}${playing?' playing':''}`}>
+   <div className="audio-choice-player">
+    <button type="button" className="audio-play" aria-label={playing?'Pausar respuesta':'Reproducir respuesta'} onClick={onPlay} disabled={!option.audioSrc}>{playing?<Pause size={21}/>:<Play size={21} fill="currentColor"/>}</button>
+    <div className="audio-timeline" aria-hidden="true"><div className="audio-wave">{Array.from({length:30},(_,i)=><i key={i} style={{height:`${9+((i*11)%23)}px`}}/>)}</div><span className="audio-fill" style={{transform:`scaleX(${duration?current/duration:0})`}}/></div>
+    <time>{formatTime(duration)}</time>
+   </div>
+   <button type="button" className="answer-confirm" aria-pressed={selected} onClick={onSelect}>{selected?'Respuesta elegida':'Esta es mi respuesta'}</button>
+   {option.audioSrc&&<audio ref={audio} src={option.audioSrc} preload="metadata" onLoadedMetadata={e=>setDuration(e.currentTarget.duration)} onTimeUpdate={e=>setCurrent(e.currentTarget.currentTime)} onEnded={onPlay}/>} 
  </div>
 }
 

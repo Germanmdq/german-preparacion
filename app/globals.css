@@ -466,3 +466,19 @@ button:focus-visible {
 /* Onda real: Web Audio API analiza presentation.mp3 en tiempo real. */
 .voice-waveform{display:none!important}
 .voice-live-wave{width:min(84vw,360px);height:112px;display:block}
+
+/* Assessment — same calm, wide audio language as the presentation */
+.audio-options{gap:18px}
+.audio-choice{width:100%;padding:14px 14px 12px;border-radius:26px;background:#fff;box-shadow:0 10px 28px #0000000c;border:1px solid transparent;transition:border-color .2s ease,box-shadow .2s ease,transform .2s ease}
+.audio-choice.playing{border-color:#1d1d1f;box-shadow:0 12px 30px #00000012}
+.audio-choice.selected{border-color:#d92d35;box-shadow:0 12px 30px #d92d3510}
+.audio-choice-player{min-height:66px;display:grid;grid-template-columns:54px minmax(0,1fr) 44px;gap:12px;align-items:center}
+.audio-choice-player .audio-play{width:54px;height:54px}
+.audio-choice-player .audio-timeline{height:42px}
+.audio-choice-player .audio-wave i{width:3px;max-height:32px}
+.audio-choice-player time{color:#8e8e93;font-size:13px;font-variant-numeric:tabular-nums;text-align:right}
+.answer-confirm{width:100%;min-height:38px;margin-top:7px;border:0;border-radius:19px;background:#f1f1f4;color:#3a3a3c;font-size:13px;font-weight:650;letter-spacing:-.01em}
+.audio-choice.selected .answer-confirm{background:#1d1d1f;color:#fff}
+.assessment-actions{margin-top:24px;padding-top:0}
+.assessment-actions .btn-primary{min-height:54px}
+@media (max-height:800px){.audio-options{gap:12px}.audio-choice{padding:10px 12px 9px}.audio-choice-player{min-height:56px;grid-template-columns:48px minmax(0,1fr) 40px}.audio-choice-player .audio-play{width:48px;height:48px}.answer-confirm{min-height:34px;margin-top:4px}.question-card legend{padding-bottom:14px}.assessment-actions{margin-top:16px}}
