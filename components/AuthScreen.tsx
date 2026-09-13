@@ -76,8 +76,8 @@ export function AuthScreen({ onAuthenticated }: { onAuthenticated: () => void })
 
   return <main className="screen auth-screen"><section className="content-card auth-card">
     <p className="eyebrow">PREPARACIÓN</p>
-    <h1>Continuá con tu mail</h1>
-    <p className="lead">Guardamos tus respuestas para darte un resultado más preciso y enviártelo a tu mail.</p>
+    <h1>Creá tu acceso gratuito</h1>
+    <p className="lead">Guardamos tus respuestas para preparar tu evaluación personalizada, conservar tu avance y enviarte el resultado a tu mail.</p>
     <button className="google-button" onClick={google} disabled={busy}><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="" aria-hidden="true"/> Continuar con Google</button>
     <div className="auth-divider"><span>o con tu correo</span></div>
     <form onSubmit={submit} className="auth-form">
@@ -85,8 +85,8 @@ export function AuthScreen({ onAuthenticated }: { onAuthenticated: () => void })
       <label>Correo electrónico<div className="input-with-icon"><Mail size={18}/><input type="email" value={email} onChange={e=>setEmail(e.target.value)} autoComplete="email" required placeholder="vos@ejemplo.com" /></div></label>
       <label>Contraseña<input type="password" value={password} onChange={e=>setPassword(e.target.value)} autoComplete={mode === 'register' ? 'new-password' : 'current-password'} required minLength={6} placeholder="Mínimo 6 caracteres" /></label>
       {error && <p className="auth-error" role="alert">{error}</p>}
-      <button className="btn-primary" disabled={busy}>Continuar <ArrowRight size={18}/></button>
+      <button className="btn-primary" disabled={busy}>{mode === 'register' ? 'Crear mi acceso gratuito' : 'Ingresar'} <ArrowRight size={18}/></button>
     </form>
-    <button className="auth-switch" onClick={()=>{setMode(mode === 'register' ? 'login' : 'register');setError('')}}>{mode === 'register' ? '¿Ya ingresaste antes? Iniciá sesión' : '¿No tenés cuenta? Registrate'}</button>
+    <>{mode === 'register' && <p className="auth-free-note">Es gratis. No requiere compra ni suscripción.</p>}<button className="auth-switch" onClick={()=>{setMode(mode === 'register' ? 'login' : 'register');setError('')}}>{mode === 'register' ? '¿Ya ingresaste antes? Iniciá sesión' : '¿No tenés cuenta? Creá tu acceso gratuito'}</button></>
   </section></main>;
 }
