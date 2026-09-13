@@ -32,7 +32,23 @@ const drafts: Array<[string, PatternKey, string[]]> = [
  ['Cuando recordás lo que no funcionó, ¿para qué usás ese recuerdo?', 'past_revision', ['Para calcular lo que probablemente vuelva a pasar.','Como advertencia, aunque intento no quedar atado.','Como información que no tiene que gobernar lo próximo.']],
 ];
 
+// Evita que la respuesta de menor interferencia quede siempre en la misma posición.
+// q01 se conserva tal como fue grabada. Para q02-q24 rotamos las tres alternativas.
+// Los valores son índices semánticos: 0 = interferencia alta, 1 = media, 2 = baja.
+const optionOrders: number[][] = [
+ [0,1,2], [2,0,1], [1,2,0], [0,2,1], [2,1,0], [1,0,2],
+ [2,0,1], [1,2,0], [0,2,1], [2,1,0], [1,0,2], [0,1,2],
+ [1,2,0], [2,0,1], [0,2,1], [1,0,2], [2,1,0], [0,1,2],
+ [2,0,1], [0,2,1], [1,0,2], [2,1,0], [1,2,0], [0,1,2],
+];
+
 export const questions: Question[] = drafts.map(([text, pattern, answers], index) => {
  const id = `q${String(index + 1).padStart(2,'0')}`;
- return { id, text, options: answers.map((answer, optionIndex) => ({ id: `${id}_${optionIndex + 1}`, text: answer, audioSrc: '', scores: optionIndex === 0 ? { [pattern]: 3 } : optionIndex === 1 ? { [pattern]: 1 } : {} })) };
+ const order = optionOrders[index];
+ return { id, text, options: order.map((semanticIndex, displayedIndex) => ({
+   id: `${id}_${displayedIndex + 1}`,
+   text: answers[semanticIndex],
+   audioSrc: index * 3 + displayedIndex + 1 <= 23 ? `/audio/respuestas/${index * 3 + displayedIndex + 1}-final.mp3` : '',
+   scores: semanticIndex === 0 ? { [pattern]: 3 } : semanticIndex === 1 ? { [pattern]: 1 } : {},
+ })) };
 });
