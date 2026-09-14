@@ -379,12 +379,28 @@ button:focus-visible {
   gap: 8px;
   margin-top: 18px;
 }
-.future-actions button {
+.future-actions button,
+.result-whatsapp {
   min-height: 50px;
   border: 0;
   border-radius: 25px;
+  padding: 10px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 1.25;
+  text-decoration: none;
+}
+.future-actions button {
   background: #e8e8ed;
   color: #8e8e93;
+}
+.result-whatsapp {
+  background: #1d1d1f;
+  color: #fff;
 }
 .next-card small {
   display: block;
