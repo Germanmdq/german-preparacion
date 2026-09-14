@@ -48,7 +48,7 @@ export const questions: Question[] = drafts.map(([text, pattern, answers], index
  return { id, text, options: order.map((semanticIndex, displayedIndex) => ({
    id: `${id}_${displayedIndex + 1}`,
    text: answers[semanticIndex],
-   audioSrc: index * 3 + displayedIndex + 1 <= 23 ? `/audio/respuestas/${index * 3 + displayedIndex + 1}-final.mp3` : '',
+   audioSrc: `/audio/respuestas/${index * 3 + displayedIndex + 1}-final.mp3`,
    scores: semanticIndex === 0 ? { [pattern]: 3 } : semanticIndex === 1 ? { [pattern]: 1 } : {},
  })) };
 });
