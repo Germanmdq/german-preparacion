@@ -28,7 +28,12 @@ export default function Page() {
     setStage('intro');
   };
   const afterPresentation = () => setStage(user ? 'assessment' : 'auth');
-  const logout = async () => { await signOut(auth); assessmentStorage.clear(); setStage('auth'); };
+  const logout = async () => {
+    const uid = user?.uid;
+    await signOut(auth);
+    if (uid) assessmentStorage.clear(uid);
+    setStage('auth');
+  };
   if (!authReady) return <div className="app-shell" />;
-  return <div className="app-shell"><audio ref={presentationRef} className="presentation-audio" preload="auto" playsInline />{stage==='video'&&<IntroVideo onFinish={enter}/>} {stage==='intro'&&<PreparationIntro audio={presentationRef.current} onStart={afterPresentation}/>} {stage==='auth'&&<AuthScreen onAuthenticated={()=>setStage('assessment')}/>} {stage==='assessment'&&user&&<Assessment user={user} onLogout={logout}/>}</div>;
+  return <div className="app-shell"><audio ref={presentationRef} className="presentation-audio" preload="auto" playsInline />{stage==='video'&&<IntroVideo onFinish={enter}/>} {stage==='intro'&&<PreparationIntro audio={presentationRef.current} onStart={afterPresentation}/>} {stage==='auth'&&<AuthScreen onAuthenticated={()=>setStage('assessment')}/>} {stage==='assessment'&&user&&<Assessment key={user.uid} user={user} onLogout={logout}/>}</div>;
 }

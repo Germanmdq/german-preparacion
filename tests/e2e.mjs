@@ -38,7 +38,10 @@ for (let i = 1; i < 24; i++) {
   await page.getByRole('button', { name: /Continuar/ }).click();
 }
 await page.getByText('HAY ALGO BASTANTE CLARO EN TUS RESPUESTAS').waitFor({ timeout: 5000 });
-const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('german-preparacion:assessment:v1')));
+const stored = await page.evaluate(() => {
+  const key = Object.keys(localStorage).find((candidate) => candidate.startsWith('german-preparacion:assessment:v1:'));
+  return key ? JSON.parse(localStorage.getItem(key)) : null;
+});
 if (Object.keys(stored.answers).length !== 24 || !stored.completedAt) throw new Error('Incomplete persisted assessment');
 await page.reload({ waitUntil: 'networkidle' });
 await page.getByRole('button', { name: 'Entrar' }).waitFor({ timeout: 15000 });
