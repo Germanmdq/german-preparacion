@@ -8,24 +8,9 @@ const isRecord = (value: unknown): value is UnknownRecord => Boolean(value) && t
 const isPattern = (value: unknown): value is PatternKey => typeof value === 'string' && patternKeys.includes(value as PatternKey);
 
 const toIso = (value: unknown): string | null => {
-  if (typeof value === 'string') {
-    const timestamp = Date.parse(value);
-    return Number.isFinite(timestamp) ? new Date(timestamp).toISOString() : null;
-  }
-  if (!isRecord(value)) return null;
-  if (typeof value.toDate === 'function') {
-    try {
-      const date = (value.toDate as () => unknown)();
-      return date instanceof Date && Number.isFinite(date.getTime()) ? date.toISOString() : null;
-    } catch {
-      return null;
-    }
-  }
-  if (typeof value.seconds === 'number') {
-    const date = new Date(value.seconds * 1000);
-    return Number.isFinite(date.getTime()) ? date.toISOString() : null;
-  }
-  return null;
+  if (typeof value !== 'string') return null;
+  const timestamp = Date.parse(value);
+  return Number.isFinite(timestamp) ? new Date(timestamp).toISOString() : null;
 };
 
 const readAnswers = (value: unknown): Answers => {
@@ -53,18 +38,15 @@ const readScores = (value: unknown): ScoreMap | null => {
   return Object.fromEntries(patternKeys.map((pattern) => [pattern, value[pattern]])) as ScoreMap;
 };
 
-export const normalizeAssessmentSession = (value: unknown, fallbackSessionId?: string): AssessmentSession | null => {
-  if (!isRecord(value)) return null;
-  const sessionId = fallbackSessionId ?? (typeof value.sessionId === 'string' && value.sessionId ? value.sessionId : undefined);
-  if (!sessionId) return null;
-  const createdAt = toIso(value.createdAt) ?? toIso(value.updatedAt);
+export const normalizeAssessmentSession = (value: unknown): AssessmentSession | null => {
+  if (!isRecord(value) || typeof value.sessionId !== 'string' || !value.sessionId) return null;
+  const createdAt = toIso(value.createdAt);
   if (!createdAt) return null;
   const completedAt = value.completedAt == null ? null : toIso(value.completedAt);
-  const updatedAt = toIso(value.updatedAt) ?? completedAt ?? createdAt;
   return {
-    sessionId,
+    sessionId: value.sessionId,
     createdAt,
-    updatedAt,
+    updatedAt: toIso(value.updatedAt) ?? completedAt ?? createdAt,
     completedAt,
     answers: readAnswers(value.answers),
     audioPlayEvents: readAudioPlayEvents(value.audioPlayEvents),
@@ -72,7 +54,6 @@ export const normalizeAssessmentSession = (value: unknown, fallbackSessionId?: s
     primaryPattern: isPattern(value.primaryPattern) ? value.primaryPattern : null,
     secondaryPattern: isPattern(value.secondaryPattern) ? value.secondaryPattern : null,
     resultVersion: typeof value.resultVersion === 'string' ? value.resultVersion : 'provisional-v1',
-    ...(typeof value.restartOf === 'string' && value.restartOf ? { restartOf: value.restartOf } : {}),
   };
 };
 
@@ -90,64 +71,6 @@ export const isCompletedAssessmentSession = (session: AssessmentSession, questio
   Boolean(session.completedAt && session.scores && session.primaryPattern && session.secondaryPattern)
   && answeredQuestionCount(session, questionList) === questionList.length
 );
-
-const timestamp = (value: string) => Date.parse(value) || 0;
-
-const compareVersions = (left: AssessmentSession, right: AssessmentSession, questionList: Question[]) => {
-  const completedDifference = Number(isCompletedAssessmentSession(left, questionList)) - Number(isCompletedAssessmentSession(right, questionList));
-  if (completedDifference) return completedDifference;
-  const progressDifference = answeredQuestionCount(left, questionList) - answeredQuestionCount(right, questionList);
-  if (progressDifference) return progressDifference;
-  const audioDifference = left.audioPlayEvents.length - right.audioPlayEvents.length;
-  if (audioDifference) return audioDifference;
-  return timestamp(left.updatedAt) - timestamp(right.updatedAt);
-};
-
-export const chooseRestorableSession = (
-  localValue: unknown,
-  remoteValues: Array<{ data: unknown; id?: string }>,
-  questionList: Question[],
-): AssessmentSession | null => {
-  const local = normalizeAssessmentSession(localValue);
-  const candidates = [
-    ...(local ? [local] : []),
-    ...remoteValues.flatMap(({ data, id }) => {
-      const session = normalizeAssessmentSession(data, id);
-      return session ? [session] : [];
-    }),
-  ];
-  if (!candidates.length) return null;
-
-  const bestBySession = new Map<string, AssessmentSession>();
-  for (const candidate of candidates) {
-    const current = bestBySession.get(candidate.sessionId);
-    if (!current || compareVersions(candidate, current, questionList) > 0) bestBySession.set(candidate.sessionId, candidate);
-  }
-
-  const sessions = [...bestBySession.values()];
-  const hasProgress = sessions.some((session) => answeredQuestionCount(session, questionList) > 0);
-  const eligible = hasProgress
-    ? sessions.filter((session) => answeredQuestionCount(session, questionList) > 0 || Boolean(session.restartOf))
-    : sessions;
-
-  return eligible.reduce((best, candidate) => {
-    const createdDifference = timestamp(candidate.createdAt) - timestamp(best.createdAt);
-    if (createdDifference) return createdDifference > 0 ? candidate : best;
-    const updatedDifference = timestamp(candidate.updatedAt) - timestamp(best.updatedAt);
-    if (updatedDifference) return updatedDifference > 0 ? candidate : best;
-    return compareVersions(candidate, best, questionList) > 0 ? candidate : best;
-  });
-};
-
-export const hydrateRestorableSession = async (
-  localValue: unknown,
-  loadRemote: () => Promise<Array<{ data: unknown; id?: string }>>,
-  questionList: Question[],
-  createNew: () => AssessmentSession,
-) => {
-  const remoteValues = await loadRemote();
-  return chooseRestorableSession(localValue, remoteValues, questionList) ?? createNew();
-};
 
 export const touchAssessmentSession = (session: AssessmentSession, now = new Date()): AssessmentSession => ({
   ...session,

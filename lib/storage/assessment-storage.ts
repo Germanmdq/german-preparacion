@@ -13,20 +13,17 @@ export type AssessmentSession = {
   primaryPattern: PatternKey | null;
   secondaryPattern: PatternKey | null;
   resultVersion: string;
-  restartOf?: string;
 };
 
 export interface AssessmentStorage {
-  load(uid: string): AssessmentSession | null;
-  save(uid: string, session: AssessmentSession): void;
-  clear(uid: string): void;
+  load(): AssessmentSession | null;
+  save(session: AssessmentSession): void;
+  clear(): void;
 }
 
-const KEY_PREFIX = 'german-preparacion:assessment:v1';
+export const ASSESSMENT_STORAGE_KEY = 'german-preparacion:assessment:v2';
 
-export const assessmentStorageKey = (uid: string) => `${KEY_PREFIX}:${uid}`;
-
-export const createSession = (now = new Date(), restartOf?: string): AssessmentSession => {
+export const createSession = (now = new Date()): AssessmentSession => {
   const timestamp = now.toISOString();
   return {
     sessionId: crypto.randomUUID(),
@@ -39,31 +36,30 @@ export const createSession = (now = new Date(), restartOf?: string): AssessmentS
     primaryPattern: null,
     secondaryPattern: null,
     resultVersion: 'provisional-v1',
-    ...(restartOf ? { restartOf } : {}),
   };
 };
 
 export const assessmentStorage: AssessmentStorage = {
-  load: (uid) => {
+  load: () => {
     try {
-      const raw = localStorage.getItem(assessmentStorageKey(uid));
+      const raw = localStorage.getItem(ASSESSMENT_STORAGE_KEY);
       return raw ? JSON.parse(raw) as AssessmentSession : null;
     } catch {
       return null;
     }
   },
-  save: (uid, session) => {
+  save: (session) => {
     try {
-      localStorage.setItem(assessmentStorageKey(uid), JSON.stringify(session));
+      localStorage.setItem(ASSESSMENT_STORAGE_KEY, JSON.stringify(session));
     } catch {
-      // Firestore remains the persistent source if local storage is unavailable.
+      // The evaluation still works for the current tab if storage is unavailable.
     }
   },
-  clear: (uid) => {
+  clear: () => {
     try {
-      localStorage.removeItem(assessmentStorageKey(uid));
+      localStorage.removeItem(ASSESSMENT_STORAGE_KEY);
     } catch {
-      // Signing out must still succeed when local storage is unavailable.
+      // Starting over can still continue in memory if storage is unavailable.
     }
   },
 };
