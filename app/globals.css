@@ -324,15 +324,20 @@ button:focus-visible {
   }
 }
 .result-screen {
-  justify-content: flex-start;
-  gap: 14px;
-  overflow: auto;
+  justify-content: center;
+  overflow: hidden;
 }
 .result-card {
-  padding: 28px 22px;
+  width: 100%;
+  padding: 4px 0;
 }
 .result-card h1 {
-  font-size: 29px;
+  margin: 0 auto;
+  max-width: 420px;
+  font-size: clamp(25px, 7vw, 32px);
+  line-height: 1.08;
+  letter-spacing: -.035em;
+  text-align: center;
 }
 .evidence {
   margin: 22px 0;
@@ -376,11 +381,11 @@ button:focus-visible {
 }
 .future-actions {
   display: grid;
-  gap: 8px;
-  margin-top: 18px;
+  gap: 10px;
+  width: min(100%, 380px);
+  margin: 22px auto 0;
 }
-.future-actions button,
-.result-whatsapp {
+.future-actions a {
   min-height: 50px;
   border: 0;
   border-radius: 25px;
@@ -394,14 +399,22 @@ button:focus-visible {
   line-height: 1.25;
   text-decoration: none;
 }
-.future-actions button {
-  background: #e8e8ed;
-  color: #8e8e93;
-}
-.result-whatsapp {
+.result-app-whatsapp {
   background: #1d1d1f;
   color: #fff;
 }
+.result-whatsapp {
+  background: #fff;
+  color: #1d1d1f;
+  box-shadow: inset 0 0 0 1px #d6d6dc;
+}
+.result-audio-player { position:relative; width:min(100%,410px); margin:22px auto 0; padding:18px 18px 22px; border-radius:38px; background:#fff; box-shadow:0 14px 36px #00000012,0 2px 8px #0000000c; display:flex; flex-direction:column; align-items:center; }
+.result-audio-player .voice-live-wave { width:min(78vw,340px); height:122px; }
+.result-audio-player audio { position:absolute; width:1px; height:1px; opacity:0; pointer-events:none; }
+.result-audio-toggle { width:58px; height:58px; margin-top:-5px; border:0; border-radius:50%; background:#1d1d1f; color:#fff; display:grid; place-items:center; box-shadow:0 8px 20px #00000028; }
+.result-audio-toggle:disabled { opacity:.35; }
+.result-audio-progress { width:min(72vw,292px); height:2px; margin-top:18px; overflow:hidden; border-radius:999px; background:#dedee3; }
+.result-audio-progress i { display:block; width:100%; height:100%; transform:scaleX(0); transform-origin:left center; background:#c52a33; transition:transform .15s linear; }
 .next-card small {
   display: block;
   margin-top: 9px;

@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 // Visualizador deliberadamente desacoplado del audio. No usamos Web Audio API:
 // en iOS un MediaElement conectado a AudioContext puede suspenderse al bloquear
 // la pantalla. El HTMLAudioElement queda nativo para permitir reproducción en background.
-export function VoiceAura({src='/audio/presentation.mp3',audio:externalAudio,onEnded}:{src?:string;audio?:HTMLAudioElement|null;onEnded?:()=>void}){
+export function VoiceAura({src='/audio/presentation.mp3',audio:externalAudio,onEnded,standalone=true}:{src?:string;audio?:HTMLAudioElement|null;onEnded?:()=>void;standalone?:boolean}){
   const audioRef=useRef<HTMLAudioElement>(null);
   const canvasRef=useRef<HTMLCanvasElement>(null);
   useEffect(()=>{
@@ -31,5 +31,5 @@ export function VoiceAura({src='/audio/presentation.mp3',audio:externalAudio,onE
     audio.addEventListener('ended',ended);draw();
     return()=>{cancelAnimationFrame(raf);audio.removeEventListener('ended',ended)};
   },[externalAudio,onEnded]);
-  return <div className="voice-aura-wrap" aria-label="Presentación en audio"><canvas ref={canvasRef} className="voice-live-wave" aria-hidden="true"/>{!externalAudio&&<audio ref={audioRef} src={src} autoPlay preload="auto" playsInline/>}</div>;
+  return <div className="voice-aura-wrap" aria-label="Presentación en audio"><canvas ref={canvasRef} className="voice-live-wave" aria-hidden="true"/>{standalone&&!externalAudio&&<audio ref={audioRef} src={src} autoPlay preload="auto" playsInline/>}</div>;
 }
